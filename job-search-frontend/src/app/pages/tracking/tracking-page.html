@@ -1,0 +1,89 @@
+<section class="tracking">
+  <div class="header">
+    <h1>Tracking</h1>
+    <div class="header-actions">
+      <button type="button" class="refresh" (click)="refreshListings()"
+              [disabled]="checkableCount() === 0 || refreshing()"
+              title="Asks JSearch whether each saved job has expired">
+        {{ refreshing() ? 'Checking JSearch…' : 'Refresh from JSearch' }}
+        <small>(uses {{ checkableCount() }} of your 200 monthly requests)</small>
+      </button>
+      <button type="button" class="save-all" (click)="saveAll()" [disabled]="!store.hasChanges() || saving()">
+        {{ saving() ? 'Saving…' : 'Save all changes' }}
+      </button>
+    </div>
+  </div>
+
+  @for (source of [store, catalog]; track $index) {
+    @if (source.error()) {
+      <p class="error">
+        {{ source.error() }}
+        <button type="button" (click)="source.retry()">Retry</button>
+      </p>
+    }
+  }
+  @if (refreshMessage()) {
+    <p class="info">{{ refreshMessage() }}</p>
+  }
+
+  @if (store.entries().length) {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Job</th>
+            <th>Resume</th>
+            <th>Cover</th>
+            <th>Applied</th>
+            <th>Response</th>
+            <th>Follow-up</th>
+            <th>Applied date</th>
+            <th>Interview</th>
+            <th>Next follow-up</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of visibleEntries(); track entry.id) {
+            <tr [class.dirty]="isDirty(entry)">
+              <td>
+                <span class="badge" [class]="badgeFor(entry).cls">{{ badgeFor(entry).label }}</span>
+                <button type="button" class="link dead-toggle" (click)="toggleDead(entry)"
+                        [disabled]="badgeFor(entry).label === 'Unknown'"
+                        [title]="isMarkedDead(entry)
+                          ? 'Un-mark: goes back to Expired?, not Live. Save to apply.'
+                          : 'Mark this job dead. Automatic checks will leave it alone. Save to apply.'">
+                  {{ isMarkedDead(entry) ? 'Unmark dead' : 'Mark dead' }}
+                </button>
+              </td>
+              <td>
+                {{ jobTitleFor(entry) }}
+                <button type="button" class="link" (click)="openApplication(entry)">open ↗</button>
+              </td>
+              <td>{{ resumeNameFor(entry) }}</td>
+              <td>{{ coverNameFor(entry) }}</td>
+              <td><input type="checkbox" [checked]="entry.applied" (change)="toggle(entry, 'applied')" /></td>
+              <td><input type="checkbox" [checked]="entry.response_received" (change)="toggle(entry, 'response_received')" /></td>
+              <td><input type="checkbox" [checked]="entry.follow_up_needed" (change)="toggle(entry, 'follow_up_needed')" /></td>
+              <td><input type="date" [value]="entry.date_applied || ''" (change)="onDate(entry, 'date_applied', $event)" /></td>
+              <td><input type="date" [value]="entry.interview_date || ''" (change)="onDate(entry, 'interview_date', $event)" /></td>
+              <td><input type="date" [value]="entry.next_follow_up_date || ''" (change)="onDate(entry, 'next_follow_up_date', $event)" /></td>
+              <td><input type="text" class="notes" [value]="entry.notes || ''" (change)="onNotes(entry, $event)" /></td>
+              <td>
+                <button type="button" class="row-save" (click)="rowSave(entry)" [disabled]="!isDirty(entry)">Save</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (hasMore()) {
+      <button type="button" class="load-more" (click)="loadMore()">Load more</button>
+    }
+  } @else {
+    <p class="empty">No tracked applications yet. Save one from the Edit page.</p>
+  }
+</section>

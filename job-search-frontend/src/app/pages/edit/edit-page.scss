@@ -1,0 +1,237 @@
+.error {
+  color: #b91c1c;
+}
+
+.lists {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.list-col h2 {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.picker {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+
+  li {
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+
+    &:hover {
+      background: #f9fafb;
+    }
+
+    &.selected {
+      background: #eff6ff;
+      font-weight: 600;
+    }
+
+    &.empty {
+      color: #9ca3af;
+      cursor: default;
+    }
+
+    small {
+      color: #6b7280;
+    }
+  }
+}
+
+.upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  input,
+  button {
+    padding: 0.4rem;
+  }
+
+  button {
+    border: 0;
+    border-radius: 4px;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem;
+  min-height: 160px;
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  app-job-meta {
+    margin-bottom: 0.5rem;
+  }
+
+  .desc,
+  .resume-text {
+    white-space: pre-wrap;
+    font-size: 0.85rem;
+    max-height: 260px;
+    overflow-y: auto;
+    margin: 0;
+  }
+
+  .empty {
+    color: #9ca3af;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  .view-switch {
+    display: inline-flex;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    overflow: hidden;
+
+    button {
+      padding: 0.15rem 0.6rem;
+      border: 0;
+      background: #fff;
+      font-size: 0.8rem;
+      color: #374151;
+      cursor: pointer;
+
+      & + button {
+        border-left: 1px solid #d1d5db;
+      }
+
+      &.on {
+        background: #2563eb;
+        color: #fff;
+      }
+    }
+  }
+
+  // Same height as the text view; the pages scroll inside it.
+  .pdf-scroll {
+    max-height: 260px;
+    overflow-y: auto;
+    background: #f3f4f6;
+    padding: 0.25rem;
+    border-radius: 4px;
+  }
+
+  .open-full {
+    display: inline-block;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  button {
+    padding: 0.5rem 1.25rem;
+    border: 0;
+    border-radius: 4px;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    // Not built yet: always disabled, styled so it reads as unavailable.
+    &.modify:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      opacity: 1;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.compare-result {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+
+  .score {
+    margin: 0 0 0.25rem;
+  }
+
+  .warn {
+    color: #b45309;
+    margin: 0 0 0.5rem;
+  }
+
+  .analysis {
+    white-space: pre-wrap;
+    margin: 0;
+  }
+}
+
+.save-all {
+  button {
+    padding: 0.6rem 1.25rem;
+    border: 0;
+    border-radius: 4px;
+    background: #16a34a;
+    color: #fff;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+
+  small {
+    display: block;
+    color: #6b7280;
+    margin-top: 0.35rem;
+  }
+
+  .success {
+    color: #15803d;
+    margin-top: 0.5rem;
+  }
+}

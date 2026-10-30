@@ -1,0 +1,26 @@
+@if (loading.isLoading()) {
+  <div class="loading-bar"></div>
+}
+
+<nav class="topnav">
+  <span class="brand">Job Search Dashboard</span>
+  <a routerLink="/search" routerLinkActive="active">Search</a>
+  <a routerLink="/edit" routerLinkActive="active">Edit</a>
+  <a routerLink="/tracking" routerLinkActive="active">Tracking</a>
+  <button type="button" class="settings" (click)="showConfig.set(true)" aria-label="Settings">⚙</button>
+</nav>
+
+<main class="content">
+  <router-outlet />
+</main>
+
+@if (showConfig()) {
+  <app-config-modal (closed)="showConfig.set(false)" />
+}
+
+@if (notifications.message(); as message) {
+  <div class="toast" role="alert">
+    <span>{{ message }}</span>
+    <button type="button" (click)="notifications.clear()" aria-label="Dismiss">✕</button>
+  </div>
+}

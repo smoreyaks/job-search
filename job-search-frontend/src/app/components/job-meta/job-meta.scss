@@ -1,0 +1,59 @@
+:host {
+  display: grid;
+  gap: 0.15rem;
+  color: #6b7280;
+}
+
+.title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.1rem;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.salary {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+// City, state and country stay on one line; a very long one is cut with "…"
+// (hover shows the "Location" label, the full value is in the job details).
+.location .text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+svg {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

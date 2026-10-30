@@ -1,0 +1,151 @@
+<section class="edit">
+  <h1>Edit</h1>
+
+  @if (catalog.error()) {
+    <p class="error">
+      {{ catalog.error() }}
+      <button type="button" (click)="catalog.retry()">Retry</button>
+    </p>
+  }
+
+  <div class="lists">
+    <!-- Saved jobs -->
+    <div class="list-col">
+      <h2>Saved jobs</h2>
+      <ul class="picker">
+        @for (job of catalog.jobs(); track job.id) {
+          <li [class.selected]="store.selectedJob()?.id === job.id" (click)="selectJob(job)">
+            {{ job.job_title }} — {{ job.company }}
+          </li>
+        } @empty {
+          <li class="empty">No saved jobs yet.</li>
+        }
+      </ul>
+    </div>
+
+    <!-- Resumes -->
+    <div class="list-col">
+      <h2>Resumes</h2>
+      <ul class="picker">
+        @for (resume of visibleResumes(); track resume.id) {
+          <li [class.selected]="store.selectedResume()?.id === resume.id" (click)="selectResume(resume)">
+            {{ resume.file_name }} <small>({{ resume.version_note }})</small>
+          </li>
+        } @empty {
+          <li class="empty">No resumes yet.</li>
+        }
+      </ul>
+      <form class="upload" (ngSubmit)="uploadResume()">
+        <input type="file" accept="application/pdf,.pdf" (change)="onResumeFile($event)" />
+        <input type="text" name="resumeNote" [(ngModel)]="resumeNote" placeholder="Version note" />
+        <button type="submit" [disabled]="uploadingResume()">
+          {{ uploadingResume() ? 'Uploading…' : 'Upload resume' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Cover letters -->
+    <div class="list-col">
+      <h2>Cover letters</h2>
+      <ul class="picker">
+        @for (cover of visibleCovers(); track cover.id) {
+          <li [class.selected]="store.selectedCover()?.id === cover.id" (click)="selectCover(cover)">
+            {{ cover.file_name }} <small>({{ cover.version_note }})</small>
+          </li>
+        } @empty {
+          <li class="empty">No cover letters yet.</li>
+        }
+      </ul>
+      <form class="upload" (ngSubmit)="uploadCover()">
+        <input type="file" accept="application/pdf,.pdf" (change)="onCoverFile($event)" />
+        <input type="text" name="coverNote" [(ngModel)]="coverNote" placeholder="Version note" />
+        <button type="submit" [disabled]="uploadingCover()">
+          {{ uploadingCover() ? 'Uploading…' : 'Upload cover letter' }}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Three-panel viewer -->
+  <div class="panels">
+    <div class="panel">
+      <h3>Job listing</h3>
+      @if (store.selectedJob(); as job) {
+        <app-job-meta [job]="job" [level]="4" />
+        <p class="desc">{{ job.job_description }}</p>
+      } @else {
+        <p class="empty">Select a saved job.</p>
+      }
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Original resume</h3>
+        @if (store.selectedResume(); as resume) {
+          <div class="view-switch" role="group" aria-label="Show the resume as">
+            <button type="button" [class.on]="store.resumeView() === 'pdf'" [attr.aria-pressed]="store.resumeView() === 'pdf'"
+                    (click)="store.resumeView.set('pdf')">PDF</button>
+            <button type="button" [class.on]="store.resumeView() === 'text'" [attr.aria-pressed]="store.resumeView() === 'text'"
+                    (click)="store.resumeView.set('text')">Text</button>
+          </div>
+        }
+      </div>
+      @if (store.selectedResume(); as resume) {
+        @if (store.resumeView() === 'text') {
+          <pre class="resume-text">{{ store.resumeText() }}</pre>
+        } @else if (store.selectedResumeFile(); as file) {
+          <div class="pdf-scroll">
+            <app-pdf-viewer [data]="file" />
+          </div>
+          <a class="open-full" [href]="resumeFileUrl(resume)" target="_blank" rel="noopener">Open full size</a>
+        } @else if (loadingResumeFile()) {
+          <p class="empty">Loading the PDF…</p>
+        } @else {
+          <p class="empty">The PDF couldn't be loaded. The extracted text is under Text.</p>
+        }
+      } @else {
+        <p class="empty">Select a resume.</p>
+      }
+    </div>
+
+    <div class="panel">
+      <h3>Modified (after Modify)</h3>
+      @if (store.modifiedText()) {
+        <pre class="resume-text">{{ store.modifiedText() }}</pre>
+      } @else {
+        <p class="empty">Modify is not wired up yet — its API route is still unmapped in the PRD.</p>
+      }
+    </div>
+  </div>
+
+  <!-- Compare + Modify controls -->
+  <div class="actions">
+    <button type="button" (click)="compare()" [disabled]="!store.canCompare() || comparing()">
+      {{ comparing() ? 'Comparing…' : 'Compare' }}
+    </button>
+    <button type="button" class="modify" disabled title="Modify isn't available yet">Modify</button>
+  </div>
+
+  @if (store.compareResult(); as result) {
+    <div class="compare-result">
+      <p class="score">Match score: <strong>{{ result.match_score }}</strong></p>
+      @if (notWorthApplying()) {
+        <p class="warn">This may not be worth applying to (low match score).</p>
+      }
+      <p class="analysis">{{ result.resume_suggestions }}</p>
+    </div>
+  }
+
+  <!-- Save All -->
+  <div class="save-all">
+    <button type="button" (click)="saveApplication()" [disabled]="!store.canSaveApplication() || saving()">
+      {{ saving() ? 'Saving…' : 'Save All (create application)' }}
+    </button>
+    @if (saveBlocker(); as blocker) {
+      <small>To enable: {{ blocker }}</small>
+    }
+    @if (saveMessage()) {
+      <p class="success">{{ saveMessage() }}</p>
+    }
+  </div>
+</section>

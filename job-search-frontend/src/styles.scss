@@ -1,0 +1,13 @@
+/* You can add global styles to this file, and also import other style files */
+
+// The page always shows its vertical scroll bar, so it never pops in or out
+// and the page width never changes when content grows or shrinks (e.g.
+// toggling Dummy jobs on Search).
+html {
+  overflow-y: scroll;
+}
+
+// No browser-default margin, so the top bar runs edge to edge.
+body {
+  margin: 0;
+}

@@ -1,0 +1,22 @@
+:host {
+  display: block;
+}
+
+.pages {
+  display: grid;
+  gap: 0.5rem;
+
+  canvas {
+    display: block;
+    max-width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 2px;
+    background: #fff;
+  }
+}
+
+.message {
+  margin: 0;
+  color: #92400e;
+  font-size: 0.85rem;
+}

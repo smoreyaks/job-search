@@ -1,0 +1,160 @@
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  input[type='text'],
+  input:not([type]),
+  select {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+  }
+
+  // The two text boxes share the spare width and give some back when the row is
+  // tight, so the buttons stay on the same line.
+  input[type='text'],
+  input:not([type]) {
+    flex: 1 1 9rem;
+    min-width: 0;
+  }
+
+  .remote {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    border: 0;
+    border-radius: 4px;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    &.dummy {
+      // One width for both labels, so the button doesn't move when toggled.
+      width: 9.5rem;
+      background: #fff;
+      color: #92400e;
+      border: 1px dashed #d97706;
+
+      &.on {
+        background: #fef3c7;
+        border-style: solid;
+      }
+    }
+  }
+}
+
+
+.dummy-note {
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  color: #92400e;
+}
+
+.warnings {
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.results {
+  display: grid;
+  gap: 0.75rem;
+
+  // Room for the fixed Save All bar under the last card.
+  padding-bottom: 5.5rem;
+}
+
+.card {
+  position: relative;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem 1rem 1rem 2.5rem;
+
+  &.flagged {
+    border-color: #2563eb;
+    background: #eff6ff;
+  }
+
+  .heart {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.75rem;
+    border: 0;
+    background: transparent;
+    font-size: 1.25rem;
+    color: #2563eb;
+    cursor: pointer;
+
+    // Already in your saved jobs: shown, not clickable.
+    &.saved {
+      color: #16a34a;
+      cursor: default;
+    }
+  }
+
+  app-job-meta {
+    margin-bottom: 0.5rem;
+  }
+
+  .snippet {
+    margin: 0;
+  }
+
+  .listing-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+.empty {
+  color: #6b7280;
+}
+
+// Fixed to the bottom of the screen so it never moves while the results scroll
+// under it. The solid background, top border and padding keep it clear of the
+// listings, and .results leaves room at the end so the last card isn't hidden.
+.save-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+}
+
+.save-all {
+  display: block;
+  width: min(100%, 24rem);
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 0;
+  border-radius: 4px;
+  background: #16a34a;
+  color: #fff;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}

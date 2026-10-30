@@ -1,0 +1,48 @@
+<div class="overlay" (click)="requestClose()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="config-title" (click)="$event.stopPropagation()">
+    <div class="header">
+      <h2 id="config-title">Settings</h2>
+      <button type="button" class="close" (click)="requestClose()" aria-label="Close settings" title="Close">×</button>
+    </div>
+
+
+    <label>
+      Local app data folder
+      <input type="text" name="localAppData" [(ngModel)]="localAppData"
+             placeholder="~/.local/share/job-search-dashboard/resume" />
+      <small>The folder on this machine where resume &amp; cover-letter PDFs are stored.</small>
+    </label>
+
+    <label>
+      Gemini response delimiter
+      <input type="text" name="delimiter" [(ngModel)]="delimiter"
+             placeholder="&#64;&#64;&#64;startdelim&#64;&#64;&#64;" />
+      <small>Marker used to split the AI reply into fields.</small>
+    </label>
+
+    <label>
+      Compare prompt instructions
+      <textarea name="comparePrompt" [(ngModel)]="comparePrompt" rows="5"
+                placeholder="How the AI should score the resume against the job…"></textarea>
+    </label>
+
+    <div class="actions">
+      <button type="button" class="cancel" (click)="requestClose()">Cancel</button>
+      <button type="button" class="save" (click)="save()" [disabled]="saving() || !hasChanges()">
+        {{ saving() ? 'Saving…' : hasChanges() ? 'Save all' : 'No changes' }}
+      </button>
+    </div>
+
+    @if (confirmingClose()) {
+      <div class="confirm-backdrop">
+        <div class="confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirm-text">
+          <p id="confirm-text">You have unsaved changes, are you sure you want to close?</p>
+          <div class="confirm-actions">
+            <button type="button" class="no" #noButton (click)="keepEditing()">No</button>
+            <button type="button" class="yes" (click)="discardAndClose()">Yes</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

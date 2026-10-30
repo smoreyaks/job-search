@@ -1,0 +1,82 @@
+<section class="search">
+  <h1>Search Jobs</h1>
+
+  <form (ngSubmit)="search()" class="search-form">
+    <input name="keyword" [(ngModel)]="keyword" placeholder="Job Title Keywords" />
+    <input name="location" [(ngModel)]="location" placeholder="Location" />
+    <label class="remote">
+      <input type="checkbox" name="remote" [(ngModel)]="remote" /> Remote only
+    </label>
+    <select name="jobType" [(ngModel)]="jobType">
+      <option value="">Job Type</option>
+      <option value="full-time">Full-time</option>
+      <option value="part-time">Part-time</option>
+      <option value="casual">Casual</option>
+      <option value="contract">Contract</option>
+    </select>
+    <select name="count" [(ngModel)]="count">
+      <option [ngValue]="1">1</option>
+      <option [ngValue]="10">10</option>
+      <option [ngValue]="30">30</option>
+      <option [ngValue]="50">50</option>
+      <option [ngValue]="100">100</option>
+    </select>
+    <button type="submit" [disabled]="loading()">Search</button>
+    <button type="button" class="dummy" (click)="toggleDummies()" [disabled]="loading()"
+            [class.on]="store.showingDummies()" [attr.aria-pressed]="store.showingDummies()"
+            title="Shows or hides 10 fake jobs for UI work. No JSearch request is made.">
+      {{ store.showingDummies() ? 'Hide dummy jobs' : 'Dummy jobs' }}
+    </button>
+  </form>
+
+  @if (store.showingDummies()) {
+    <p class="dummy-note">Showing 10 dummy jobs. No JSearch request was used.</p>
+  }
+  @if (loading()) {
+    <p class="loading">Loading…</p>
+  }
+
+  @if (warnings().length) {
+    <div class="warnings">
+      <strong>Possible duplicates of jobs you already saved:</strong>
+      <ul>
+        @for (warning of warnings(); track warning.candidate_url) {
+          <li>
+            {{ warning.candidate_url }} looks like
+            “{{ warning.likely_match.job_title }}” at {{ warning.likely_match.company }}
+          </li>
+        }
+      </ul>
+    </div>
+  }
+
+  <div class="results">
+    @for (job of store.results(); track job.url) {
+      <article class="card" [class.flagged]="isFlagged(job)" [class.saved]="isSaved(job)">
+        @if (isSaved(job)) {
+          <span class="heart saved" title="Saved" aria-label="Saved">♥</span>
+        } @else {
+          <button class="heart" type="button" (click)="toggleFlag(job)" [attr.aria-label]="isFlagged(job) ? 'Unflag' : 'Flag to save'">
+            {{ isFlagged(job) ? '♥' : '♡' }}
+          </button>
+        }
+        <app-job-meta [job]="job" />
+        <p class="snippet">{{ snippet(job.job_description) }}</p>
+        <!-- Opens in your own browser tab; the app itself never requests the board's page. -->
+        <a class="listing-link" [href]="job.url" target="_blank" rel="noopener noreferrer">
+          View listing on {{ job.board_source || 'the board' }} ↗
+        </a>
+      </article>
+    } @empty {
+      <p class="empty">No results yet. Run a search above.</p>
+    }
+  </div>
+
+  <!-- Always shown, fixed to the bottom of the screen, so it never pops in or out;
+       disabled until a job on screen is flagged. -->
+  <div class="save-bar">
+    <button class="save-all" type="button" (click)="saveAll()" [disabled]="loading() || store.flaggedCount() === 0">
+      Save All Jobs
+    </button>
+  </div>
+</section>
