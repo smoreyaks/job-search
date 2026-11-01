@@ -32,9 +32,11 @@ export class TrackingPage {
   readonly visibleEntries = computed(() => this.store.entries().slice(0, this.visibleCount()));
   readonly hasMore = computed(() => this.store.entries().length > this.visibleCount());
 
-  // Jobs the manual refresh will ask JSearch about (each costs 1 request):
-  // every one with a JSearch id, manually dead ones included (23 Oct rules).
-  readonly checkableCount = computed(() => this.catalog.jobs().filter((j) => j.jsearch_job_id).length);
+  // Jobs the manual refresh will ask about (each costs 1 request): every one
+  // with a JSearch or Jobs API id, manually dead ones included (23 Oct rules).
+  readonly checkableCount = computed(
+    () => this.catalog.jobs().filter((j) => j.jsearch_job_id || j.jobs_api_job_id).length,
+  );
 
   // --- related-entity lookups (ID lookup in local state) ---
   jobFor(entry: TrackingEntry): JobListing | undefined {
@@ -147,11 +149,11 @@ export class TrackingPage {
 
     this.catalog.refreshListings().subscribe({
       next: (checked) => {
-        this.refreshMessage.set(`Checked ${checked} saved job${checked === 1 ? '' : 's'} with JSearch.`);
+        this.refreshMessage.set(`Checked ${checked} saved job${checked === 1 ? '' : 's'} with their job API.`);
         this.refreshing.set(false);
       },
       error: (err) => {
-        this.notifications.error("Couldn't refresh the jobs from JSearch", err);
+        this.notifications.error("Couldn't refresh the saved jobs", err);
         this.refreshing.set(false);
       },
     });

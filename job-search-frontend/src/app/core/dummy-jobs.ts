@@ -1,6 +1,6 @@
 import { JobListing } from './models';
 
-// Ten fixed fake search results for working on the UI without spending JSearch
+// Ten fixed fake search results for working on the UI without spending API
 // quota. The Search page's "Dummy jobs" button shows them; nothing is fetched.
 // The mix covers the cases the cards need to handle: salary or N/A, a missing
 // location, long titles and long locations.
@@ -39,4 +39,5 @@ export const DUMMY_JOBS: JobListing[] = SEEDS.map((seed, i) => ({
   joe_status: 0,
   archived_at: null,
   jsearch_job_id: null,
+  jobs_api_job_id: null,
 }));

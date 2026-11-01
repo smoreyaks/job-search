@@ -73,7 +73,7 @@ export class CatalogStore {
   }
 
   // Tracking page refresh button: every saved listing comes back refreshed.
-  // Emits how many were checked with JSearch.
+  // Emits how many were checked.
   refreshListings(): Observable<number> {
     return this.jobsApi.refreshListings().pipe(
       tap(({ listings }) => this.jobs.set(markPassedExpiries(listings))),

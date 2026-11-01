@@ -23,7 +23,18 @@ export interface JobListing {
   archived_at: string | null;
   jsearch_job_id?: string | null;
   job_offer_expires_at?: string | null;
+  // The Jobs API's (jobs-api14, LinkedIn) own id; set on jobs found through it.
+  jobs_api_job_id?: string | null;
 }
+
+// The job APIs the Search page can search, matching /jobs/search's `source`.
+// Each one is its own job pool; JSearch stays for when it serves Australia again.
+export type JobSource = 'jsearch' | 'jobs_api';
+
+export const JOB_SOURCES: { value: JobSource; label: string; description: string }[] = [
+  { value: 'jobs_api', label: 'Jobs API', description: 'Jobs API: LinkedIn listings' },
+  { value: 'jsearch', label: 'JSearch', description: 'JSearch: Google for Jobs listings' },
+];
 
 export interface Resume {
   id: number;

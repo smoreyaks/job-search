@@ -107,6 +107,11 @@
 
   .snippet {
     margin: 0;
+
+    &.pending {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
   }
 
   .listing-link {
