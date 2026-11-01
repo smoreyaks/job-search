@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_20_095708) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_01_100537) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,6 +60,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_20_095708) do
     t.datetime "archived_at"
     t.string "jsearch_job_id"
     t.datetime "job_offer_expires_at"
+    t.string "jobs_api_job_id"
+    t.index ["jobs_api_job_id"], name: "index_job_listings_on_jobs_api_job_id"
     t.index ["jsearch_job_id"], name: "index_job_listings_on_jsearch_job_id"
   end
 

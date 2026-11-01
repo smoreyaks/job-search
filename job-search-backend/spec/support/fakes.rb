@@ -18,6 +18,24 @@ module Fakes
     end
   end
 
+  # Fulfills JobDetailsSourcePort. Returns the canned details for each known id
+  # (unknown ids are left out, like a job the source removed) and records calls.
+  class JobDetailsSource
+    include JobDetailsSourcePort
+
+    attr_reader :requested_ids
+
+    def initialize(details = {})
+      @details = details
+      @requested_ids = nil
+    end
+
+    def details(job_ids:)
+      @requested_ids = job_ids
+      @details.slice(*job_ids)
+    end
+  end
+
   # Fulfills JobListingRepositoryPort with an in-memory store.
   class JobListingRepository
     include JobListingRepositoryPort

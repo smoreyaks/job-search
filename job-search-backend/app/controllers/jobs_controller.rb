@@ -1,9 +1,10 @@
 class JobsController < ApplicationController
   LISTING_KEYS = Domain::JobListing.members
 
-  # GET /jobs/search
+  # GET /jobs/search  (source: "jsearch" or "jobs_api", default jsearch)
   def search
     results = Container.search_jobs.call(
+      source: params[:source].presence || UseCases::SearchJobs::DEFAULT_SOURCE,
       keyword: params[:keyword],
       location: params[:location],
       remote: ActiveModel::Type::Boolean.new.cast(params[:remote]),
@@ -31,7 +32,8 @@ class JobsController < ApplicationController
     render_collection(Container.list_job_listings.call)
   end
 
-  # POST /jobs/refreshListings  (Tracking page refresh button; 1 JSearch request per listing checked)
+  # POST /jobs/refreshListings  (Tracking page refresh button; 1 request per listing checked,
+  # through the API each listing came from)
   def refresh_listings
     result = Container.refresh_listings.call
     render json: { listings: result[:listings].map(&:to_h), checked: result[:checked] }
