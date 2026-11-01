@@ -9,14 +9,13 @@
   canvas {
     display: block;
     max-width: 100%;
-    border: 1px solid #e5e7eb;
-    border-radius: 2px;
+    border: 1px solid var(--line);
     background: #fff;
   }
 }
 
 .message {
   margin: 0;
-  color: #92400e;
+  color: var(--warn);
   font-size: 0.85rem;
 }
