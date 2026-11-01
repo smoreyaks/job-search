@@ -1,13 +1,215 @@
 /* You can add global styles to this file, and also import other style files */
 
+// MGS2-menu theme (PRD "UI design"): one very pale green text colour on a
+// darker green-gray, thin monospaced type, sharp 1px lines, no shadows or
+// ornament. Every component colours itself from these tokens.
+:root {
+  color-scheme: dark;
+
+  --bg: #18201c;
+  --surface: #1f2924;
+  --surface-2: #26322c;
+
+  // The one text colour; dim/line variants are the same green at lower alpha.
+  --text: #e2f1e5;
+  --text-dim: rgba(226, 241, 229, 0.6);
+  --line: rgba(226, 241, 229, 0.18);
+  --line-strong: rgba(226, 241, 229, 0.45);
+  --fill: rgba(226, 241, 229, 0.08);
+  --fill-strong: rgba(226, 241, 229, 0.16);
+
+  // Status colours, muted to sit inside the palette.
+  --ok: #8fd19e;
+  --warn: #d8c27a;
+  --warn-fill: rgba(216, 194, 122, 0.1);
+  --danger: #e0897c;
+  --danger-fill: rgba(224, 137, 124, 0.14);
+
+  --overlay: rgba(10, 14, 12, 0.7);
+
+  // Fixed top bar height, so full-height pages (Edit) can fill the rest.
+  --nav-h: 3.5rem;
+
+  // MGS2 Menu (Solid Snake's Game Shrine fan font, wide and squared) when it's
+  // installed on this machine; Michroma (OFL, index.html), the closest free
+  // match, everywhere else.
+  --font: 'MGS2', 'Michroma', sans-serif;
+}
+
+// The MGS2 font is personal-use only, so it is never committed or served from
+// the repo: it's picked up from the local install by name.
+@font-face {
+  font-family: 'MGS2';
+  src: local('MGS2 Menu'), local('MGS2 Menu Regular'), local('MGS2Menu-Regular');
+  font-display: swap;
+}
+
 // The page always shows its vertical scroll bar, so it never pops in or out
 // and the page width never changes when content grows or shrinks (e.g.
 // toggling Dummy jobs on Search).
 html {
   overflow-y: scroll;
+  scrollbar-color: var(--line-strong) var(--bg);
 }
 
 // No browser-default margin, so the top bar runs edge to edge.
 body {
   margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+a {
+  color: var(--text);
+  text-underline-offset: 0.2em;
+}
+
+::selection {
+  background: var(--text);
+  color: var(--bg);
+}
+
+// Controls inherit the theme instead of the browser's light defaults; each
+// component only adds its own sizing and the odd variant.
+input,
+select,
+textarea,
+button {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0;
+}
+
+input,
+select,
+textarea {
+  &:focus {
+    outline: none;
+    border-color: var(--line-strong);
+  }
+}
+
+input[type='checkbox'] {
+  accent-color: var(--text);
+}
+
+input[type='file']::file-selector-button {
+  margin-right: 0.6rem;
+  padding: 0.15rem 0.6rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--fill);
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+
+  &:not(:disabled):hover {
+    border-color: var(--line-strong);
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--text);
+    outline-offset: 2px;
+  }
+}
+
+// Visually hidden but still read by screen readers.
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// Slide toggle: a checkbox (role="switch") shown as a square track and knob.
+// Markup: <label class="switch"><input type="checkbox" role="switch" />
+// <span class="track" aria-hidden="true"></span> Label</label>. Add .warn for
+// a toggle that should read as a caution when on (Dummy jobs).
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+  }
+
+  .track {
+    position: relative;
+    flex: none;
+    box-sizing: border-box;
+    width: 2.25rem;
+    height: 1.2rem;
+    background: var(--fill);
+    border: 1px solid var(--line-strong);
+    transition: background 0.15s, border-color 0.15s;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: calc(1.2rem - 6px);
+      height: calc(1.2rem - 6px);
+      background: var(--text-dim);
+      transition: transform 0.15s, background 0.15s;
+    }
+  }
+
+  input:checked + .track {
+    background: var(--fill-strong);
+    border-color: var(--text);
+
+    &::after {
+      transform: translateX(1.05rem);
+      background: var(--text);
+    }
+  }
+
+  &.warn input:checked + .track {
+    background: var(--warn-fill);
+    border-color: var(--warn);
+
+    &::after {
+      background: var(--warn);
+    }
+  }
+
+  input:focus-visible + .track {
+    outline: 1px solid var(--text);
+    outline-offset: 2px;
+  }
+
+  &:has(input:disabled) {
+    opacity: 0.4;
+    cursor: default;
+  }
 }

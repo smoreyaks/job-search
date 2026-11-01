@@ -12,44 +12,41 @@
 }
 
 .error {
-  color: #b91c1c;
+  color: var(--danger);
 }
 
 .info {
-  color: #374151;
+  color: var(--text-dim);
 }
 
 .refresh {
   padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  background: #fff;
+  background: transparent;
   cursor: pointer;
 
   small {
-    color: #6b7280;
+    color: var(--text-dim);
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.4;
     cursor: default;
   }
 }
 
 .empty {
-  color: #6b7280;
+  color: var(--text-dim);
 }
 
 .save-all {
   padding: 0.5rem 1rem;
-  border: 0;
-  border-radius: 4px;
-  background: #16a34a;
-  color: #fff;
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
   cursor: pointer;
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.4;
     cursor: default;
   }
 }
@@ -62,45 +59,57 @@ table {
   border-collapse: collapse;
   width: 100%;
   font-size: 0.85rem;
+  background: var(--surface);
 }
 
 th,
 td {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--line);
   padding: 0.4rem 0.5rem;
   text-align: left;
   white-space: nowrap;
 }
 
-tr.dirty {
-  background: #fffbeb;
+th {
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
 }
 
+tr.dirty {
+  background: var(--warn-fill);
+}
+
+// Outlined tags in the status colour, not filled pills.
 .badge {
   display: inline-block;
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+  border: 1px solid currentColor;
   font-size: 0.75rem;
-  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 
   &.live {
-    background: #16a34a;
+    color: var(--ok);
   }
   &.amber {
-    background: #d97706;
+    color: var(--warn);
   }
   &.dead {
-    background: #b91c1c;
+    color: var(--danger);
   }
   &.muted {
-    background: #9ca3af;
+    color: var(--text-dim);
   }
 }
 
 .link {
   border: 0;
   background: transparent;
-  color: #2563eb;
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
   cursor: pointer;
   padding: 0;
   margin-left: 0.25rem;
@@ -108,10 +117,10 @@ tr.dirty {
 }
 
 .dead-toggle {
-  color: #b91c1c;
+  color: var(--danger);
 
   &:disabled {
-    color: #9ca3af;
+    color: var(--text-dim);
     cursor: default;
   }
 }
@@ -127,14 +136,12 @@ input[type='date'] {
 
 .row-save {
   padding: 0.3rem 0.6rem;
-  border: 0;
-  border-radius: 4px;
-  background: #2563eb;
-  color: #fff;
+  background: var(--fill);
+  border-color: var(--line-strong);
   cursor: pointer;
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.35;
     cursor: default;
   }
 }
@@ -142,8 +149,6 @@ input[type='date'] {
 .load-more {
   margin-top: 0.75rem;
   padding: 0.4rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  background: #fff;
+  background: transparent;
   cursor: pointer;
 }

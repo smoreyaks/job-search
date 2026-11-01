@@ -4,8 +4,8 @@
     <div class="header-actions">
       <button type="button" class="refresh" (click)="refreshListings()"
               [disabled]="checkableCount() === 0 || refreshing()"
-              title="Asks JSearch whether each saved job has expired">
-        {{ refreshing() ? 'Checking JSearch…' : 'Refresh from JSearch' }}
+              title="Asks the API each saved job came from whether it has expired">
+        {{ refreshing() ? 'Checking…' : 'Refresh listings' }}
         <small>(uses {{ checkableCount() }} of your 200 monthly requests)</small>
       </button>
       <button type="button" class="save-all" (click)="saveAll()" [disabled]="!store.hasChanges() || saving()">

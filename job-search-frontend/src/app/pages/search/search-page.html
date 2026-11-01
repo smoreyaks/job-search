@@ -2,11 +2,14 @@
   <h1>Search Jobs</h1>
 
   <form (ngSubmit)="search()" class="search-form">
+    <!-- Which API, and so which job pool, the search runs against -->
+    <select name="source" class="source" [(ngModel)]="source" aria-label="Job API" [title]="sourceDescription()">
+      @for (option of sources; track option.value) {
+        <option [ngValue]="option.value" [title]="option.description">{{ option.label }}</option>
+      }
+    </select>
     <input name="keyword" [(ngModel)]="keyword" placeholder="Job Title Keywords" />
     <input name="location" [(ngModel)]="location" placeholder="Location" />
-    <label class="remote">
-      <input type="checkbox" name="remote" [(ngModel)]="remote" /> Remote only
-    </label>
     <select name="jobType" [(ngModel)]="jobType">
       <option value="">Job Type</option>
       <option value="full-time">Full-time</option>
@@ -14,7 +17,8 @@
       <option value="casual">Casual</option>
       <option value="contract">Contract</option>
     </select>
-    <select name="count" [(ngModel)]="count">
+    <select name="count" [(ngModel)]="count" aria-label="Number of results"
+            [title]="source === 'jobs_api' ? 'Jobs API: 1 request per 10 results' : 'Number of results'">
       <option [ngValue]="1">1</option>
       <option [ngValue]="10">10</option>
       <option [ngValue]="30">30</option>
@@ -22,15 +26,24 @@
       <option [ngValue]="100">100</option>
     </select>
     <button type="submit" [disabled]="loading()">Search</button>
-    <button type="button" class="dummy" (click)="toggleDummies()" [disabled]="loading()"
-            [class.on]="store.showingDummies()" [attr.aria-pressed]="store.showingDummies()"
-            title="Shows or hides 10 fake jobs for UI work. No JSearch request is made.">
-      {{ store.showingDummies() ? 'Hide dummy jobs' : 'Dummy jobs' }}
-    </button>
+
+    <div class="toggles">
+      <label class="switch">
+        <input type="checkbox" role="switch" name="remote" [(ngModel)]="remote" />
+        <span class="track" aria-hidden="true"></span>
+        Remote only
+      </label>
+      <label class="switch warn" title="Shows or hides 10 fake jobs for UI work. No API request is made.">
+        <input type="checkbox" role="switch" [checked]="store.showingDummies()" (change)="toggleDummies()"
+               [disabled]="loading()" />
+        <span class="track" aria-hidden="true"></span>
+        Dummy jobs
+      </label>
+    </div>
   </form>
 
   @if (store.showingDummies()) {
-    <p class="dummy-note">Showing 10 dummy jobs. No JSearch request was used.</p>
+    <p class="dummy-note">Showing 10 dummy jobs. No API request was used.</p>
   }
   @if (loading()) {
     <p class="loading">Loading…</p>
@@ -61,7 +74,12 @@
           </button>
         }
         <app-job-meta [job]="job" />
-        <p class="snippet">{{ snippet(job.job_description) }}</p>
+        @if (job.job_description) {
+          <p class="snippet">{{ snippet(job.job_description) }}</p>
+        } @else {
+          <!-- Jobs API searches return summaries; the description costs 1 request, so it's fetched on save. -->
+          <p class="snippet pending">The full description is fetched when you save this job.</p>
+        }
         <!-- Opens in your own browser tab; the app itself never requests the board's page. -->
         <a class="listing-link" [href]="job.url" target="_blank" rel="noopener noreferrer">
           View listing on {{ job.board_source || 'the board' }} ↗
