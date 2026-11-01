@@ -37,6 +37,19 @@ RSpec.describe "Jobs", type: :request do
       expect(response).to have_http_status(:unprocessable_content)
     end
 
+    it "fetches a Jobs API listing's description before saving it" do
+      stub_const("ENV", ENV.to_h.merge("RAPIDAPI_KEY" => "test-key"))
+      details = stub_request(:get, %r{jobs-api14\.p\.rapidapi\.com/v2/linkedin/get}).with(query: { "id" => "7" })
+        .to_return(status: 200, body: { data: { id: "7", description: "The full job ad", employmentType: "Full-time" },
+                                        hasError: false }.to_json)
+
+      post "/jobs/saveAll", params: { listings: [listing_params.merge(job_description: "", jobs_api_job_id: "7")] }
+
+      expect(details).to have_been_made.once
+      expect(response).to have_http_status(:created)
+      expect(response.parsed_body["saved"].first).to include("job_description" => "The full job ad", "jobs_api_job_id" => "7")
+    end
+
     it "flags a duplicate of an already-saved listing while still saving" do
       create_job_listing(company: "Acme", job_title: "Ruby Dev", job_posted_date: Date.new(2026, 10, 2), url: "https://old/1")
 
@@ -61,6 +74,28 @@ RSpec.describe "Jobs", type: :request do
       get "/jobs/search", params: { keyword: "" }
 
       expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "returns 422 for an unknown source" do
+      get "/jobs/search", params: { keyword: "ruby", source: "monster" }
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "searches the Jobs API when it's the chosen source" do
+      stub_const("ENV", ENV.to_h.merge("RAPIDAPI_KEY" => "test-key"))
+      search = stub_request(:get, %r{jobs-api14\.p\.rapidapi\.com/v2/linkedin/search})
+        .with(query: hash_including("query" => "ruby", "location" => "Sydney"))
+        .to_return(status: 200, body: { data: [{ id: "7", title: "Ruby Dev", companyName: "Acme",
+                                                 datePosted: "2026-10-30", linkedinUrl: "https://au.linkedin.com/jobs/view/7" }],
+                                        meta: { nextToken: nil }, hasError: false }.to_json)
+
+      get "/jobs/search", params: { keyword: "ruby", location: "Sydney", source: "jobs_api" }
+
+      expect(search).to have_been_made.once
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.first).to include("job_title" => "Ruby Dev", "board_source" => "LinkedIn",
+                                                    "jobs_api_job_id" => "7", "job_description" => "")
     end
   end
 

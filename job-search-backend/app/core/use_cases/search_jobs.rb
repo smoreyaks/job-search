@@ -1,16 +1,19 @@
 module UseCases
-  # Validates search input and delegates to the job source port. Returns the
-  # port's job_listing-shaped results unchanged.
+  # Validates search input and delegates to the job source the user picked
+  # (the Search page's API selector). Returns that port's job_listing-shaped
+  # results unchanged.
   class SearchJobs
     ALLOWED_COUNTS = [1, 10, 30, 50, 100].freeze
     JOB_TYPES = %w[full-time part-time casual contract].freeze
     DEFAULT_COUNT = 10
+    DEFAULT_SOURCE = "jsearch".freeze
 
-    def initialize(job_source:)
-      @job_source = job_source
+    # job_sources: Hash of source name => JobSourcePort, e.g. "jsearch", "jobs_api".
+    def initialize(job_sources:)
+      @job_sources = job_sources
     end
 
-    def call(keyword:, location: nil, remote: false, job_type: nil, count: DEFAULT_COUNT)
+    def call(keyword:, location: nil, remote: false, job_type: nil, count: DEFAULT_COUNT, source: DEFAULT_SOURCE)
       keyword = keyword.to_s.strip
       raise Errors::ValidationFailed, "keyword is required" if keyword.empty?
 
@@ -18,7 +21,12 @@ module UseCases
         raise Errors::ValidationFailed, "invalid job_type: #{job_type}"
       end
 
-      @job_source.search(
+      job_source = @job_sources[source.to_s]
+      if job_source.nil?
+        raise Errors::ValidationFailed, "invalid source: #{source} (expected #{@job_sources.keys.join(' or ')})"
+      end
+
+      job_source.search(
         keyword: keyword,
         location: location,
         remote: !!remote,

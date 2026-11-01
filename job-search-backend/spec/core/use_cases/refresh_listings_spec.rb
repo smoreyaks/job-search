@@ -83,4 +83,35 @@ RSpec.describe UseCases::RefreshListings do
         .to have_attributes(joe_status: 2, job_offer_expires_at: now + 5.days)
     end
   end
+
+  describe "listings saved from the Jobs API" do
+    def jobs_api_listing(id:, job_id:, joe_status: 0)
+      listing(id: id, job_id: nil, joe_status: joe_status).with(jobs_api_job_id: job_id)
+    end
+
+    it "asks each API only about its own listings" do
+      repo = Fakes::JobListingRepository.new([
+        listing(id: 1, job_id: "js"),
+        jobs_api_listing(id: 2, job_id: "li")
+      ])
+      jsearch = Fakes::JobExpirySource.new("js" => now + 1.day)
+      jobs_api = Fakes::JobExpirySource.new("li" => now)
+
+      result = described_class.new(repository: repo, expiry_source: jsearch, jobs_api_expiry_source: jobs_api,
+                                   clock: -> { now + 1.second }).call
+      rows = result[:listings].to_h { |l| [l.id, l] }
+
+      expect(jsearch.requested_ids).to eq(["js"])
+      expect(jobs_api.requested_ids).to eq(["li"])
+      expect(rows[1]).to have_attributes(joe_status: 0)
+      expect(rows[2]).to have_attributes(joe_status: 1, status: "closed")
+      expect(result[:checked]).to eq(2)
+    end
+
+    it "skips them when no Jobs API source is given" do
+      repo = Fakes::JobListingRepository.new([jobs_api_listing(id: 1, job_id: "li")])
+
+      expect(build(repo, Fakes::JobExpirySource.new).call[:checked]).to eq(0)
+    end
+  end
 end

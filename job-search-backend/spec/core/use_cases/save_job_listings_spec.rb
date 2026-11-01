@@ -40,4 +40,41 @@ RSpec.describe UseCases::SaveJobListings do
       expect(result[:saved].size).to eq(1)
     end
   end
+
+  context "with listings from the Jobs API" do
+    subject(:use_case) { described_class.new(repository: repository, details_source: details_source) }
+
+    let(:details_source) do
+      Fakes::JobDetailsSource.new("li-1" => { job_description: "Full description", employment_type: "contract" })
+    end
+
+    it "fills in the description (and employment type) before saving" do
+      result = use_case.call(listings: [listing(jobs_api_job_id: "li-1", job_description: "")])
+
+      expect(details_source.requested_ids).to eq(["li-1"])
+      expect(result[:saved].first).to have_attributes(job_description: "Full description", employment_type: "contract")
+    end
+
+    it "only asks about Jobs API listings that have no description" do
+      use_case.call(listings: [
+        listing(jobs_api_job_id: "li-1", job_description: "", url: "https://x/1"),
+        listing(jobs_api_job_id: "li-2", job_description: "already here", url: "https://x/2"),
+        listing(jsearch_job_id: "js-1", url: "https://x/3")
+      ])
+
+      expect(details_source.requested_ids).to eq(["li-1"])
+    end
+
+    it "makes no request when nothing needs details" do
+      use_case.call(listings: [listing])
+
+      expect(details_source.requested_ids).to be_nil
+    end
+
+    it "saves nothing when a description can't be fetched" do
+      expect { use_case.call(listings: [listing(jobs_api_job_id: "gone", job_description: "")]) }
+        .to raise_error(Errors::ExternalServiceFailed, /description/)
+      expect(repository.rows).to be_empty
+    end
+  end
 end

@@ -20,16 +20,20 @@ module Container
     # --- external adapters ---
     def job_source     = JSearchAdapter.new
     def job_expiry_source = JSearchAdapter.new
+    def jobs_api       = JobsApiAdapter.new
     def match_analyzer = GeminiMatchAnalyzerAdapter.new
     def resume_rewriter = GeminiResumeRewriterAdapter.new
 
+    # The Search page's API selector: source name => JobSourcePort.
+    def job_sources = { "jsearch" => job_source, "jobs_api" => jobs_api }
+
     # --- use cases ---
     def search_jobs
-      UseCases::SearchJobs.new(job_source: job_source)
+      UseCases::SearchJobs.new(job_sources: job_sources)
     end
 
     def save_job_listings
-      UseCases::SaveJobListings.new(repository: job_listings_repository)
+      UseCases::SaveJobListings.new(repository: job_listings_repository, details_source: jobs_api)
     end
 
     def list_job_listings
@@ -37,7 +41,9 @@ module Container
     end
 
     def refresh_listings
-      UseCases::RefreshListings.new(repository: job_listings_repository, expiry_source: job_expiry_source)
+      UseCases::RefreshListings.new(
+        repository: job_listings_repository, expiry_source: job_expiry_source, jobs_api_expiry_source: jobs_api
+      )
     end
 
     def list_resumes

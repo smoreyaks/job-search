@@ -1,9 +1,10 @@
 require "rails_helper"
 
 RSpec.describe UseCases::SearchJobs do
-  subject(:use_case) { described_class.new(job_source: job_source) }
+  subject(:use_case) { described_class.new(job_sources: { "jsearch" => job_source, "jobs_api" => jobs_api }) }
 
   let(:job_source) { Fakes::JobSource.new(results: %w[result1 result2]) }
+  let(:jobs_api) { Fakes::JobSource.new(results: %w[linkedin1]) }
 
   it "delegates to the job source and returns its results" do
     result = use_case.call(keyword: "ruby", location: "Sydney", remote: true, job_type: "full-time", count: 30)
@@ -39,5 +40,25 @@ RSpec.describe UseCases::SearchJobs do
     use_case.call(keyword: "ruby", count: 1)
 
     expect(job_source.last_args[:count]).to eq(1)
+  end
+
+  it "uses JSearch when no source is given" do
+    use_case.call(keyword: "ruby")
+
+    expect(job_source.last_args).to be_present
+    expect(jobs_api.last_args).to be_nil
+  end
+
+  it "searches the source the user picked" do
+    result = use_case.call(keyword: "ruby", location: "Sydney", source: "jobs_api")
+
+    expect(result).to eq(%w[linkedin1])
+    expect(jobs_api.last_args).to include(keyword: "ruby", location: "Sydney")
+    expect(job_source.last_args).to be_nil
+  end
+
+  it "rejects an unknown source" do
+    expect { use_case.call(keyword: "ruby", source: "monster") }
+      .to raise_error(Errors::ValidationFailed, /source/)
   end
 end
