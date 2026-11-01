@@ -53,6 +53,13 @@
   padding: 1.5rem 1.25rem;
 }
 
+// The Edit page runs edge to edge (PRD layout: list grid hard against the left
+// edge, viewers filling the rest), so it drops the centred column.
+.content:has(> app-edit-page) {
+  max-width: none;
+  padding: 0;
+}
+
 .loading-bar {
   position: fixed;
   top: 0;

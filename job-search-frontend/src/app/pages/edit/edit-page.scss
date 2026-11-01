@@ -1,49 +1,93 @@
+// PRD Edit layout (desktop): a quarter-width column hard against the left edge
+// holding the 2x2 list grid (resumes, cover letters / job listings,
+// comparisons) with Compare and Save All under it, then three full-height
+// viewers: the job, the resume, and the resume with changes highlighted.
+:host {
+  display: block;
+}
+
+.edit {
+  display: grid;
+  grid-template-columns: minmax(22rem, 26%) repeat(3, minmax(0, 1fr));
+  height: calc(100dvh - var(--nav-h));
+}
+
 .error {
-  color: #b91c1c;
+  color: var(--danger);
+  margin: 0;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 0;
+  padding: 0.75rem;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
 }
 
 .lists {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  flex: 1 1 auto;
+  min-height: 26rem;
 }
 
-.list-col h2 {
-  font-size: 1rem;
-  margin: 0 0 0.5rem;
+.list-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+
+  h2 {
+    margin: 0 0 0.35rem;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
 }
 
 .picker {
-  list-style: none;
-  margin: 0 0 0.75rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
   padding: 0;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  max-height: 180px;
+  list-style: none;
   overflow-y: auto;
+  font-size: 0.72rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
 
   li {
-    padding: 0.4rem 0.6rem;
+    padding: 0.4rem 0.5rem;
     cursor: pointer;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--line);
+    overflow-wrap: anywhere;
 
     &:hover {
-      background: #f9fafb;
+      background: var(--fill);
     }
 
     &.selected {
-      background: #eff6ff;
-      font-weight: 600;
+      background: var(--fill-strong);
+      box-shadow: inset 2px 0 0 var(--text);
     }
 
     &.empty {
-      color: #9ca3af;
+      color: var(--text-dim);
       cursor: default;
+
+      &:hover {
+        background: none;
+      }
     }
 
     small {
-      color: #6b7280;
+      display: block;
+      margin-top: 0.15rem;
+      color: var(--text-dim);
     }
   }
 }
@@ -51,187 +95,242 @@
 .upload {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+  font-size: 0.7rem;
 
-  input,
+  input[type='text'],
   button {
-    padding: 0.4rem;
+    padding: 0.35rem 0.4rem;
+    min-width: 0;
   }
 
   button {
-    border: 0;
-    border-radius: 4px;
-    background: #2563eb;
-    color: #fff;
-    cursor: pointer;
+    background: var(--fill);
+    border-color: var(--line-strong);
 
     &:disabled {
-      opacity: 0.6;
+      opacity: 0.4;
       cursor: default;
     }
   }
 }
 
-.panels {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 1rem;
+// The native file input is too wide for a grid cell, so it's hidden over a
+// compact button that shows the chosen file's name.
+.file-pick {
+  position: relative;
+  padding: 0.35rem 0.4rem;
+  border: 1px dashed var(--line-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--fill);
+  }
+
+  &:focus-within {
+    outline: 1px solid var(--text);
+    outline-offset: 2px;
+  }
+
+  input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
 }
 
-.panel {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 0.75rem;
-  min-height: 160px;
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: none;
+}
 
-  h3 {
-    margin: 0 0 0.5rem;
-    font-size: 0.95rem;
+.compare-result {
+  padding: 0.6rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  font-size: 0.75rem;
+
+  .score {
+    margin: 0 0 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+
+    strong {
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
   }
 
-  app-job-meta {
-    margin-bottom: 0.5rem;
+  .warn {
+    color: var(--warn);
+    margin: 0 0 0.35rem;
   }
 
-  .desc,
-  .resume-text {
+  .analysis {
     white-space: pre-wrap;
-    font-size: 0.85rem;
-    max-height: 260px;
-    overflow-y: auto;
     margin: 0;
-  }
-
-  .empty {
-    color: #9ca3af;
-  }
-
-  .panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-
-    h3 {
-      margin: 0;
-    }
-  }
-
-  .view-switch {
-    display: inline-flex;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    overflow: hidden;
-
-    button {
-      padding: 0.15rem 0.6rem;
-      border: 0;
-      background: #fff;
-      font-size: 0.8rem;
-      color: #374151;
-      cursor: pointer;
-
-      & + button {
-        border-left: 1px solid #d1d5db;
-      }
-
-      &.on {
-        background: #2563eb;
-        color: #fff;
-      }
-    }
-  }
-
-  // Same height as the text view; the pages scroll inside it.
-  .pdf-scroll {
-    max-height: 260px;
+    max-height: 12rem;
     overflow-y: auto;
-    background: #f3f4f6;
-    padding: 0.25rem;
-    border-radius: 4px;
-  }
-
-  .open-full {
-    display: inline-block;
-    margin-top: 0.4rem;
-    font-size: 0.8rem;
   }
 }
 
 .actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
-  margin-bottom: 1rem;
 
   button {
-    padding: 0.5rem 1.25rem;
-    border: 0;
-    border-radius: 4px;
-    background: #2563eb;
-    color: #fff;
-    cursor: pointer;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    background: var(--fill);
+    border-color: var(--line-strong);
 
     &:disabled {
-      opacity: 0.6;
+      opacity: 0.4;
       cursor: default;
     }
 
     // Not built yet: always disabled, styled so it reads as unavailable.
     &.modify:disabled {
-      background: #e5e7eb;
-      color: #9ca3af;
+      background: transparent;
+      border-style: dashed;
+      border-color: var(--line);
+      color: var(--text-dim);
       opacity: 1;
       cursor: not-allowed;
     }
   }
 }
 
-.compare-result {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-
-  .score {
-    margin: 0 0 0.25rem;
-  }
-
-  .warn {
-    color: #b45309;
-    margin: 0 0 0.5rem;
-  }
-
-  .analysis {
-    white-space: pre-wrap;
-    margin: 0;
-  }
-}
-
 .save-all {
   button {
-    padding: 0.6rem 1.25rem;
-    border: 0;
-    border-radius: 4px;
-    background: #16a34a;
-    color: #fff;
-    cursor: pointer;
+    width: 100%;
+    padding: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
 
     &:disabled {
-      opacity: 0.6;
+      opacity: 0.4;
       cursor: default;
     }
   }
 
   small {
     display: block;
-    color: #6b7280;
     margin-top: 0.35rem;
+    font-size: 0.7rem;
+    color: var(--text-dim);
   }
 
   .success {
-    color: #15803d;
-    margin-top: 0.5rem;
+    margin: 0.5rem 0 0;
+    color: var(--ok);
+  }
+}
+
+// Each viewer fills the full height; only its body scrolls.
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid var(--line);
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex: none;
+  min-height: 2.75rem;
+  box-sizing: border-box;
+  padding: 0 0.75rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+
+  h3 {
+    margin: 0;
+    font-size: 0.8rem;
+  }
+}
+
+.panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0.75rem;
+  overflow-y: auto;
+
+  app-job-meta {
+    margin-bottom: 0.75rem;
+  }
+
+  .desc,
+  .resume-text {
+    margin: 0;
+    white-space: pre-wrap;
+    font: inherit;
+    font-size: 0.78rem;
+    line-height: 1.6;
+  }
+
+  .empty {
+    margin: 0;
+    color: var(--text-dim);
+  }
+}
+
+.view-switch {
+  display: inline-flex;
+  border: 1px solid var(--line);
+
+  button {
+    padding: 0.15rem 0.6rem;
+    border: 0;
+    background: transparent;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+
+    & + button {
+      border-left: 1px solid var(--line);
+    }
+
+    &.on {
+      background: var(--fill-strong);
+      color: var(--text);
+    }
+  }
+}
+
+.pdf-scroll {
+  padding: 0.25rem;
+  background: var(--bg);
+}
+
+.open-full {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+}
+
+// The list column scales with the screen: narrower desktops give the viewers
+// a bigger share. (Phones are handled on the mobile-responsiveness branch.)
+@media (max-width: 1400px) {
+  .edit {
+    grid-template-columns: minmax(20rem, 28%) repeat(3, minmax(0, 1fr));
   }
 }
