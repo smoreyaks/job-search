@@ -29,6 +29,19 @@
 
   // Fixed top bar height, so full-height pages (Edit) can fill the rest.
   --nav-h: 3.5rem;
+
+  // MGS2 Menu (Solid Snake's Game Shrine fan font, wide and squared) when it's
+  // installed on this machine; Michroma (OFL, index.html), the closest free
+  // match, everywhere else.
+  --font: 'MGS2', 'Michroma', sans-serif;
+}
+
+// The MGS2 font is personal-use only, so it is never committed or served from
+// the repo: it's picked up from the local install by name.
+@font-face {
+  font-family: 'MGS2';
+  src: local('MGS2 Menu'), local('MGS2 Menu Regular'), local('MGS2Menu-Regular');
+  font-display: swap;
 }
 
 // The page always shows its vertical scroll bar, so it never pops in or out
@@ -44,6 +57,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
+  font-family: var(--font);
   font-weight: 300;
   letter-spacing: 0.02em;
 }
