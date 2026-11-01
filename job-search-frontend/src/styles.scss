@@ -140,3 +140,76 @@ button {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+// Slide toggle: a checkbox (role="switch") shown as a square track and knob.
+// Markup: <label class="switch"><input type="checkbox" role="switch" />
+// <span class="track" aria-hidden="true"></span> Label</label>. Add .warn for
+// a toggle that should read as a caution when on (Dummy jobs).
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+  }
+
+  .track {
+    position: relative;
+    flex: none;
+    box-sizing: border-box;
+    width: 2.25rem;
+    height: 1.2rem;
+    background: var(--fill);
+    border: 1px solid var(--line-strong);
+    transition: background 0.15s, border-color 0.15s;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: calc(1.2rem - 6px);
+      height: calc(1.2rem - 6px);
+      background: var(--text-dim);
+      transition: transform 0.15s, background 0.15s;
+    }
+  }
+
+  input:checked + .track {
+    background: var(--fill-strong);
+    border-color: var(--text);
+
+    &::after {
+      transform: translateX(1.05rem);
+      background: var(--text);
+    }
+  }
+
+  &.warn input:checked + .track {
+    background: var(--warn-fill);
+    border-color: var(--warn);
+
+    &::after {
+      background: var(--warn);
+    }
+  }
+
+  input:focus-visible + .track {
+    outline: 1px solid var(--text);
+    outline-offset: 2px;
+  }
+
+  &:has(input:disabled) {
+    opacity: 0.4;
+    cursor: default;
+  }
+}

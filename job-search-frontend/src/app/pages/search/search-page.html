@@ -10,9 +10,6 @@
     </select>
     <input name="keyword" [(ngModel)]="keyword" placeholder="Job Title Keywords" />
     <input name="location" [(ngModel)]="location" placeholder="Location" />
-    <label class="remote">
-      <input type="checkbox" name="remote" [(ngModel)]="remote" /> Remote only
-    </label>
     <select name="jobType" [(ngModel)]="jobType">
       <option value="">Job Type</option>
       <option value="full-time">Full-time</option>
@@ -29,11 +26,20 @@
       <option [ngValue]="100">100</option>
     </select>
     <button type="submit" [disabled]="loading()">Search</button>
-    <button type="button" class="dummy" (click)="toggleDummies()" [disabled]="loading()"
-            [class.on]="store.showingDummies()" [attr.aria-pressed]="store.showingDummies()"
-            title="Shows or hides 10 fake jobs for UI work. No API request is made.">
-      {{ store.showingDummies() ? 'Hide dummy jobs' : 'Dummy jobs' }}
-    </button>
+
+    <div class="toggles">
+      <label class="switch">
+        <input type="checkbox" role="switch" name="remote" [(ngModel)]="remote" />
+        <span class="track" aria-hidden="true"></span>
+        Remote only
+      </label>
+      <label class="switch warn" title="Shows or hides 10 fake jobs for UI work. No API request is made.">
+        <input type="checkbox" role="switch" [checked]="store.showingDummies()" (change)="toggleDummies()"
+               [disabled]="loading()" />
+        <span class="track" aria-hidden="true"></span>
+        Dummy jobs
+      </label>
+    </div>
   </form>
 
   @if (store.showingDummies()) {

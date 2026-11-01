@@ -60,6 +60,12 @@
   padding: 0;
 }
 
+// The Search page's filters sit on one line, which needs more than the
+// centred column's width.
+.content:has(> app-search-page) {
+  max-width: 1440px;
+}
+
 .loading-bar {
   position: fixed;
   top: 0;
