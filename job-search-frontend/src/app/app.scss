@@ -39,7 +39,10 @@
     background: transparent;
     border: 0;
     color: var(--text-dim);
-    font-size: 1.1em;
+    // Twice the nav text's icon size; line-height 1 keeps it inside the bar.
+    font-size: 2.2em;
+    line-height: 1;
+    padding: 0;
     cursor: pointer;
 
     &:hover {
