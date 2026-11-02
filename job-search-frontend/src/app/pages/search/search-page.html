@@ -10,6 +10,11 @@
     </select>
     <input name="keyword" [(ngModel)]="keyword" placeholder="Job Title Keywords" />
     <input name="location" [(ngModel)]="location" placeholder="Location" />
+    <select name="country" [(ngModel)]="country" aria-label="Country">
+      @for (option of countries; track option.value) {
+        <option [ngValue]="option.value">{{ option.label }}</option>
+      }
+    </select>
     <select name="jobType" [(ngModel)]="jobType">
       <option value="">Job Type</option>
       <option value="full-time">Full-time</option>
