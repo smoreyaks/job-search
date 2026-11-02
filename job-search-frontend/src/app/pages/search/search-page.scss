@@ -1,5 +1,12 @@
-// One line on desktop: API, keywords, location, job type, count, Search, then
-// the two toggles after a gap. (Narrow screens: mobile-responsiveness branch.)
+// 20% under the browser's default 2em heading, with no top margin so the title
+// and filters sit close under the navbar.
+h1 {
+  font-size: 1.6em;
+  margin: 0 0 0.75rem;
+}
+
+// One line on desktop: API, keywords, location, country, job type, count,
+// Search, then the two toggles stacked after a gap. (Narrow screens: mobile-responsiveness branch.)
 .search-form {
   display: flex;
   align-items: center;
@@ -10,6 +17,16 @@
   input:not([type]),
   select {
     padding: 0.5rem;
+  }
+
+  // Selects render 2px taller than inputs and buttons by default, so every
+  // control gets one fixed height; the toggle pair below matches it exactly.
+  input[type='text'],
+  input:not([type]),
+  select,
+  button {
+    box-sizing: border-box;
+    height: 2.625rem;
   }
 
   // The two text boxes share the spare width and give some back when the row is
@@ -30,13 +47,26 @@
     flex: none;
   }
 
+  // Sets the API choice apart from the search terms, the same 28px gap as
+  // between Search and the toggles.
+  select.source {
+    margin-right: 1.25rem;
+  }
+
+  // Remote over Dummy jobs, toggle left and text right. The pair stretches to
+  // the row's height and pins one track to each edge, so the top track lines
+  // up with the inputs' top border and the bottom track with their bottom.
   .toggles {
+    --switch-h: 1.05rem;
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    align-self: stretch;
     flex: none;
     margin-left: 1.25rem;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    line-height: 1;
   }
 
   .switch.warn {

@@ -5,6 +5,7 @@
 // ornament. Every component colours itself from these tokens.
 :root {
   color-scheme: dark;
+  --switch-h: 1.2rem;
 
   --bg: #18201c;
   --surface: #1f2924;
@@ -28,7 +29,7 @@
   --overlay: rgba(10, 14, 12, 0.7);
 
   // Fixed top bar height, so full-height pages (Edit) can fill the rest.
-  --nav-h: 3.5rem;
+  --nav-h: 2.45rem;
 
   // MGS2 Menu (Solid Snake's Game Shrine fan font, wide and squared) when it's
   // installed on this machine; Michroma (OFL, index.html), the closest free
@@ -144,8 +145,11 @@ button {
 // Slide toggle: a checkbox (role="switch") shown as a square track and knob.
 // Markup: <label class="switch"><input type="checkbox" role="switch" />
 // <span class="track" aria-hidden="true"></span> Label</label>. Add .warn for
-// a toggle that should read as a caution when on (Dummy jobs).
+// a toggle that should read as a caution when on (Dummy jobs). Set
+// --switch-h on a container to resize the track; the rest scales from it.
 .switch {
+  --switch-w: calc(var(--switch-h) * 1.875);
+
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -166,8 +170,8 @@ button {
     position: relative;
     flex: none;
     box-sizing: border-box;
-    width: 2.25rem;
-    height: 1.2rem;
+    width: var(--switch-w);
+    height: var(--switch-h);
     background: var(--fill);
     border: 1px solid var(--line-strong);
     transition: background 0.15s, border-color 0.15s;
@@ -177,8 +181,8 @@ button {
       position: absolute;
       top: 2px;
       left: 2px;
-      width: calc(1.2rem - 6px);
-      height: calc(1.2rem - 6px);
+      width: calc(var(--switch-h) - 6px);
+      height: calc(var(--switch-h) - 6px);
       background: var(--text-dim);
       transition: transform 0.15s, background 0.15s;
     }
@@ -189,7 +193,7 @@ button {
     border-color: var(--text);
 
     &::after {
-      transform: translateX(1.05rem);
+      transform: translateX(calc(var(--switch-w) - var(--switch-h)));
       background: var(--text);
     }
   }

@@ -8,6 +8,7 @@
   background: var(--surface);
   border-bottom: 1px solid var(--line);
   color: var(--text);
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
 
@@ -38,7 +39,7 @@
     background: transparent;
     border: 0;
     color: var(--text-dim);
-    font-size: 1.1rem;
+    font-size: 1.1em;
     cursor: pointer;
 
     &:hover {
@@ -61,9 +62,11 @@
 }
 
 // The Search page's filters sit on one line, which needs more than the
-// centred column's width.
+// centred column's width. The top padding matches the title-to-filters gap
+// (h1 margin-bottom in search-page.scss), so the title sits evenly between.
 .content:has(> app-search-page) {
   max-width: 1440px;
+  padding-top: 0.75rem;
 }
 
 .loading-bar {
