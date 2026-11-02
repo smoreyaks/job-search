@@ -2,10 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { JobListing, JobSource, RefreshListingsResponse, SaveAllResponse } from '../models';
+import { Country, JobListing, JobSource, RefreshListingsResponse, SaveAllResponse } from '../models';
 
 export interface SearchParams {
   source: JobSource;
+  country: Country;
   keyword: string;
   location?: string;
   remote?: boolean;
@@ -19,7 +20,10 @@ export class JobsApi {
   private base = environment.apiBaseUrl;
 
   search(params: SearchParams): Observable<JobListing[]> {
-    let httpParams = new HttpParams().set('source', params.source).set('keyword', params.keyword);
+    let httpParams = new HttpParams()
+      .set('source', params.source)
+      .set('country', params.country)
+      .set('keyword', params.keyword);
     if (params.location) httpParams = httpParams.set('location', params.location);
     httpParams = httpParams.set('remote', String(params.remote ?? false));
     httpParams = httpParams.set('count', String(params.count ?? 10));

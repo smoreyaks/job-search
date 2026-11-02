@@ -82,10 +82,16 @@ RSpec.describe "Jobs", type: :request do
       expect(response).to have_http_status(:unprocessable_content)
     end
 
+    it "returns 422 for an unsupported country" do
+      get "/jobs/search", params: { keyword: "ruby", country: "nz" }
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
     it "searches the Jobs API when it's the chosen source" do
       stub_const("ENV", ENV.to_h.merge("RAPIDAPI_KEY" => "test-key"))
       search = stub_request(:get, %r{jobs-api14\.p\.rapidapi\.com/v2/linkedin/search})
-        .with(query: hash_including("query" => "ruby", "location" => "Sydney"))
+        .with(query: hash_including("query" => "ruby", "location" => "Sydney, Australia"))
         .to_return(status: 200, body: { data: [{ id: "7", title: "Ruby Dev", companyName: "Acme",
                                                  datePosted: "2026-10-30", linkedinUrl: "https://au.linkedin.com/jobs/view/7" }],
                                         meta: { nextToken: nil }, hasError: false }.to_json)

@@ -21,6 +21,8 @@ class JSearchAdapter
   MAX_PAGES = 20
   # This app targets Australian job boards (Seek/Indeed/LinkedIn/Jora), so
   # default JSearch's country filter to AU. Overridable via JSEARCH_COUNTRY.
+  # A search's own country (the Search page's selector) takes precedence;
+  # the default still covers job-details lookups.
   DEFAULT_COUNTRY = "au".freeze
 
   # Our employment enum -> JSearch employment_types filter.
@@ -43,10 +45,10 @@ class JSearchAdapter
     @api_key = api_key
   end
 
-  def search(keyword:, location:, remote:, job_type:, count:)
+  def search(keyword:, location:, remote:, job_type:, count:, country: nil)
     require_api_key!
 
-    json = request(ENDPOINT, build_params(keyword, location, remote, job_type, count))
+    json = request(ENDPOINT, build_params(keyword, location, remote, job_type, count, country))
     # search-v2 nests the jobs at data.jobs (data is an object with jobs + cursor).
     Array(json.dig("data", "jobs")).first(count).map { |raw| map_listing(raw) }
   end
@@ -78,12 +80,12 @@ class JSearchAdapter
     ENV.fetch("JSEARCH_COUNTRY", DEFAULT_COUNTRY)
   end
 
-  def build_params(keyword, location, remote, job_type, count)
+  def build_params(keyword, location, remote, job_type, count, search_country)
     query = [keyword, location].map(&:to_s).map(&:strip).reject(&:empty?).join(" in ")
     params = {
       "query" => query,
       "num_pages" => pages_for(count),
-      "country" => country,
+      "country" => search_country.presence || country,
     }
     params["remote_jobs_only"] = "true" if remote
     filter = EMPLOYMENT_FILTER[job_type]

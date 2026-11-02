@@ -142,6 +142,19 @@ RSpec.describe JSearchAdapter do
     expect(job.joe_status).to eq(1)
   end
 
+  it "filters by the search's country, falling back to the default" do
+    us = stub_request(:get, %r{jsearch\.p\.rapidapi\.com/search-v2}).with(query: hash_including("country" => "us"))
+      .to_return(status: 200, body: jsearch_body([]))
+    au = stub_request(:get, %r{jsearch\.p\.rapidapi\.com/search-v2}).with(query: hash_including("country" => "au"))
+      .to_return(status: 200, body: jsearch_body([]))
+
+    adapter.search(keyword: "dev", location: nil, remote: false, job_type: nil, count: 10, country: "us")
+    adapter.search(keyword: "dev", location: nil, remote: false, job_type: nil, count: 10)
+
+    expect(us).to have_been_made.once
+    expect(au).to have_been_made.once
+  end
+
   it "limits results to the requested count" do
     jobs = Array.new(25) { |i| { "job_title" => "Dev #{i}", "job_publisher" => "Seek", "job_description" => "d", "job_apply_link" => "https://x/#{i}" } }
     stub_request(:get, /jsearch\.p\.rapidapi\.com/).to_return(status: 200, body: jsearch_body(jobs))

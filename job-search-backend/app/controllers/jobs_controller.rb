@@ -1,10 +1,12 @@
 class JobsController < ApplicationController
   LISTING_KEYS = Domain::JobListing.members
 
-  # GET /jobs/search  (source: "jsearch" or "jobs_api", default jsearch)
+  # GET /jobs/search  (source: "jsearch" or "jobs_api", default jsearch;
+  # country: "au" or "us", default au)
   def search
     results = Container.search_jobs.call(
       source: params[:source].presence || UseCases::SearchJobs::DEFAULT_SOURCE,
+      country: params[:country].presence || UseCases::SearchJobs::DEFAULT_COUNTRY,
       keyword: params[:keyword],
       location: params[:location],
       remote: ActiveModel::Type::Boolean.new.cast(params[:remote]),

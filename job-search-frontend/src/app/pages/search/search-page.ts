@@ -4,7 +4,7 @@ import { JobMeta } from '../../components/job-meta/job-meta';
 import { JobsApi } from '../../core/api/jobs-api';
 import { JobsStore } from '../../core/state/jobs-store';
 import { CatalogStore } from '../../core/state/catalog-store';
-import { JobListing, DuplicateWarning, JobSource, JOB_SOURCES } from '../../core/models';
+import { JobListing, DuplicateWarning, JobSource, JOB_SOURCES, Country, COUNTRIES } from '../../core/models';
 import { DUMMY_JOBS } from '../../core/dummy-jobs';
 import { NotificationService } from '../../core/notification.service';
 
@@ -21,10 +21,12 @@ export class SearchPage {
   private notifications = inject(NotificationService);
 
   readonly sources = JOB_SOURCES;
+  readonly countries = COUNTRIES;
 
   // JSearch has returned no Australian jobs since 31 Oct, so the Jobs API is
   // the default until it recovers.
   source: JobSource = 'jobs_api';
+  country: Country = 'au';
   keyword = '';
   location = '';
   remote = false;
@@ -50,6 +52,7 @@ export class SearchPage {
     this.api
       .search({
         source: this.source,
+        country: this.country,
         keyword: this.keyword,
         location: this.location,
         remote: this.remote,

@@ -26,8 +26,17 @@ class JobsApiAdapter
   MAX_PAGES = 10
   BOARD_SOURCE = "LinkedIn".freeze
   # A blank location would search worldwide; this app targets Australia.
-  # Overridable via JOBS_API_DEFAULT_LOCATION.
+  # Overridable via JOBS_API_DEFAULT_LOCATION. Used when a search gives no country.
   DEFAULT_LOCATION = "Australia".freeze
+
+  # The API filters by free-text location only, so a search's country code
+  # becomes a country name: the whole location when none is typed, otherwise
+  # appended ("Sydney" -> "Sydney, Australia") so a same-named place elsewhere
+  # isn't matched.
+  COUNTRY_NAMES = {
+    "au" => "Australia",
+    "us" => "United States",
+  }.freeze
 
   # Our employment enum -> the API's employmentTypes filter.
   EMPLOYMENT_FILTER = {
@@ -50,10 +59,10 @@ class JobsApiAdapter
     @api_key = api_key
   end
 
-  def search(keyword:, location:, remote:, job_type:, count:)
+  def search(keyword:, location:, remote:, job_type:, count:, country: nil)
     require_api_key!
 
-    params = build_params(keyword, location, remote, job_type)
+    params = build_params(keyword, location, remote, job_type, country)
     jobs = []
     pages_for(count).times do
       json = request(SEARCH_ENDPOINT, params)
@@ -108,15 +117,25 @@ class JobsApiAdapter
     end
   end
 
-  def build_params(keyword, location, remote, job_type)
+  def build_params(keyword, location, remote, job_type, country)
     params = {
       "query" => keyword.to_s.strip,
-      "location" => location.to_s.strip.presence || default_location,
+      "location" => location_for_search(location, country),
     }
     params["workplaceTypes"] = "remote" if remote
     filter = EMPLOYMENT_FILTER[job_type]
     params["employmentTypes"] = filter if filter
     params
+  end
+
+  def location_for_search(location, country)
+    location = location.to_s.strip
+    country_name = COUNTRY_NAMES[country.to_s.downcase]
+    return location.presence || default_location if country_name.nil?
+    return country_name if location.empty?
+    return location if location.downcase.include?(country_name.downcase)
+
+    "#{location}, #{country_name}"
   end
 
   def default_location

@@ -36,6 +36,15 @@ export const JOB_SOURCES: { value: JobSource; label: string; description: string
   { value: 'jsearch', label: 'JSearch', description: 'JSearch: Google for Jobs listings' },
 ];
 
+// The Search page's country selector; the API turns the code into each job
+// source's own country filter.
+export type Country = 'au' | 'us';
+
+export const COUNTRIES: { value: Country; label: string }[] = [
+  { value: 'au', label: 'Australia' },
+  { value: 'us', label: 'USA' },
+];
+
 export interface Resume {
   id: number;
   file_name: string;

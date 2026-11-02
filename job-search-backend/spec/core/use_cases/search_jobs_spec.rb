@@ -11,7 +11,7 @@ RSpec.describe UseCases::SearchJobs do
 
     expect(result).to eq(%w[result1 result2])
     expect(job_source.last_args).to eq(
-      keyword: "ruby", location: "Sydney", remote: true, job_type: "full-time", count: 30
+      keyword: "ruby", location: "Sydney", remote: true, job_type: "full-time", count: 30, country: "au"
     )
   end
 
@@ -55,6 +55,17 @@ RSpec.describe UseCases::SearchJobs do
     expect(result).to eq(%w[linkedin1])
     expect(jobs_api.last_args).to include(keyword: "ruby", location: "Sydney")
     expect(job_source.last_args).to be_nil
+  end
+
+  it "passes the chosen country to the job source" do
+    use_case.call(keyword: "ruby", country: "US")
+
+    expect(job_source.last_args[:country]).to eq("us")
+  end
+
+  it "rejects an unsupported country" do
+    expect { use_case.call(keyword: "ruby", country: "nz") }
+      .to raise_error(Errors::ValidationFailed, /country/)
   end
 
   it "rejects an unknown source" do

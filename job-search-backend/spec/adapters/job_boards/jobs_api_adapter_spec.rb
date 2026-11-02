@@ -65,6 +65,29 @@ RSpec.describe JobsApiAdapter do
     expect(stub).to have_been_made.once
   end
 
+  describe "country" do
+    def expect_location(expected, **search_args)
+      stub = stub_request(:get, %r{v2/linkedin/search}).with(query: hash_including("location" => expected))
+        .to_return(status: 200, body: search_body([]))
+
+      search(**search_args)
+
+      expect(stub).to have_been_made.once
+    end
+
+    it "searches the whole country when no location is given" do
+      expect_location("United States", location: nil, country: "us")
+    end
+
+    it "adds the country to a typed location" do
+      expect_location("Sydney, Australia", location: "Sydney", country: "au")
+    end
+
+    it "leaves a location that already names the country alone" do
+      expect_location("Austin, Texas, United States", location: "Austin, Texas, United States", country: "us")
+    end
+  end
+
   it "maps casual to LinkedIn's temporary filter" do
     stub = stub_request(:get, %r{v2/linkedin/search}).with(query: hash_including("employmentTypes" => "temporary"))
       .to_return(status: 200, body: search_body([]))
